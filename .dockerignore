@@ -1,0 +1,48 @@
+# Exclude kokoro directory from build context (mounted via docker-compose volumes)
+kokoro/
+../kokoro/
+
+# Large model files and caches (exceptions below for bundled models)
+model/*.onnx
+!model/kokoro.onnx  # Include kokoro.onnx in build context when available
+model/*.safetensors
+.cache/huggingface/models--*
+.cache/pykokoro/
+.hf_cache/
+
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+env/
+*.egg-info/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+tmp/
+
+# Docker volumes (will be mounted at runtime)
+docker/volumes/*
+!docker/volumes/.gitkeep
+
+# Testing artifacts
+test_output/
+coverage/
+.pytest_cache/
+htmlcov/
+
+# Audio output files
+/tmp/kokoro-tts/*.wav
+output/*.wav

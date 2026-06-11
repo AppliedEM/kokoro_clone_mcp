@@ -1,0 +1,60 @@
+# Audio files generated during synthesis/playback (temporary outputs)
+*.wav
+./samples/*.wav
+./output
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Docker volumes (mounted data)
+docker/volumes/*
+!docker/volumes/.gitkeep
+
+# Log files from testing/debugging
+*.log
+tmp/
+/tmp/kokoro-tts/*.wav
+
+# Model cache directories (can be very large, ~1-2GB each)
+.cache/huggingface/models--*
+.cache/pykokoro/
+.hf_cache/
+models/hf-cache/
+!models/hf-cache/.gitkeep
+
+# Test artifacts
+test_output/
+coverage/
+.pytest_cache/
+htmlcov/
+
+# Large model files (consider using git-lfs or downloading separately)
+model/*.onnx
+model/*.safetensors
+models/kanade.safetensors
+!models/.gitkeep

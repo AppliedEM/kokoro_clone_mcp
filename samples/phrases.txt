@@ -1,0 +1,4 @@
+Hello! This is a test of the Kokoro TTS voice synthesis.
+How does this sound? The quality is surprisingly good.
+Kokoro can generate speech with many different voices.
+Voice blending lets you create custom combinations.

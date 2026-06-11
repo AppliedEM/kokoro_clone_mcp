@@ -1,0 +1,59 @@
+services:
+  kokoro-tts-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kokoro-tts-mcp
+    restart: unless-stopped
+    command:
+    - python
+    - -m
+    - mcp_server.server
+    - --tcp
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8765'
+    volumes:
+    - kokoro-models:/root/.cache/pykokoro
+    - ./models/hf-cache:/root/.cache/huggingface
+    - ./models/hf-cache:/app/models/.hf-cache  # Also accessible from app dir for KokoClone downloads
+    - ./models/kanade.safetensors:/app/models/kanade.safetensors:ro
+    - ./models/kanade-config.yaml:/app/models/kanade-config.yaml:ro
+    - ./model/kokoro.onnx:/app/models/kokoro.onnx:ro  # Voice cloning ONNX model (bundled or downloaded)
+    - ../kokoro:/app/kokoro-original:ro
+    - ./output:/tmp/kokoro-tts
+    # Audio playback support (write access required for paplay socket connection)
+    - /run/user/${HOST_UID}/pulse/native:/root/.pulse/native
+    # ALSA device mounts as fallback for aplay
+    - /dev/snd:/dev/snd:ro
+    ports:
+    - 8765:8765
+    environment:
+      PYKOKORO_MODEL_DIR: /root/.cache/pykokoro
+      KOKORO_VOICE_DIR: /app/kokoro/voice
+      PYTHONUNBUFFERED: '1'
+      HF_HOME: /root/.cache/huggingface
+      KOKORO_LOCAL_MODEL_DIR: /app/models
+      PULSE_SERVER: unix:/root/.pulse/native
+      PULSE_RUNTIME_PATH: /root/.pulse
+    deploy:
+      resources:
+        reservations:
+          memory: 2G
+        limits:
+          memory: 8G
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); s.connect(('127.0.0.1',
+        8765)); s.close()
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  kokoro-models:
+    driver: local
