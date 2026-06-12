@@ -23,6 +23,7 @@ services:
     - ./model/kokoro.onnx:/app/models/kokoro.onnx:ro  # Voice cloning ONNX model (bundled or downloaded)
     - ../kokoro:/app/kokoro-original:ro
     - ./output:/tmp/kokoro-tts
+    - ~/Documents/compsci/ai/voice_samples:/app/voice-samples:ro  # User voice samples for cloning
     # Audio playback support (write access required for paplay socket connection)
     - /run/user/${HOST_UID}/pulse/native:/root/.pulse/native
     # ALSA device mounts as fallback for aplay

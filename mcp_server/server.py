@@ -62,6 +62,35 @@ logging.basicConfig(
 )
 logger = logging.getLogger("kokoro-mcp-server")
 
+
+# ============================================================================
+# TTS Text Sanitization (strip characters that break voice transcription)
+# ============================================================================
+
+def sanitize_tts_text(text: str) -> str:
+    """Remove characters that cause issues with TTS/voice transcription.
+    
+    Allowed characters: alphanumeric, spaces, and basic punctuation
+    that voice engines handle correctly: , . ' \" ( ) -
+    
+    Emojis, special symbols, and other Unicode are stripped to prevent
+    garbled speech output from voice transcription systems.
+    
+    Args:
+        text: Input text possibly containing problematic characters
+        
+    Returns:
+        Sanitized text with only allowed characters preserved
+    """
+    import re
+    # Keep alphanumeric, spaces, and basic punctuation
+    sanitized = "".join(
+        c if (c.isalnum() or c in " ,.'\"()-\n\t") else ""
+        for c in text
+    )
+    return sanitized
+
+
 # ============================================================================
 # Configuration
 # ============================================================================
@@ -964,6 +993,8 @@ class KokoroTTSServer:
         """
         try:
             text = arguments.get("input", "")
+            # Sanitize text before TTS — strip emojis and special chars that break voice transcription
+            text = sanitize_tts_text(text)
             voice = arguments.get("voice", DEFAULT_CONFIG["voice"])
             quality = arguments.get("quality", DEFAULT_CONFIG["model_quality"])
             device = arguments.get("device", DEFAULT_CONFIG["device"])
@@ -1111,6 +1142,8 @@ class KokoroTTSServer:
         """
         try:
             text = arguments.get("input", "")
+            # Sanitize text before TTS — strip emojis and special chars that break voice transcription
+            text = sanitize_tts_text(text)
             ref_audio = arguments.get("ref_audio", "")
             ref_text = arguments.get("ref_text", "")
             quality = arguments.get("quality", DEFAULT_CONFIG["model_quality"])
